@@ -5,7 +5,7 @@ import mongoose from 'mongoose'
 import request from 'request'
 import fs from 'fs'
 import AWS from 'aws-sdk'
-import lodash from 'lodash'
+import path from 'path'
 
 import App from './server'
 
@@ -72,10 +72,10 @@ app.methods.get('/', async (_req: Request, res: Response): Promise<void> => {
         download(`${baseUrl}${value.kebabTitle}${extBack}`, value.kebabTitle + extBack, () => {
             console.log("Downloaded background ", (index + 1) + "/" + data.length);
         })
-        webp.dwebp(__dirname + "/out/" + value.kebabTitle + ext, __dirname + "/conv/" + value.kebabTitle + ".jpeg", "-o").then(async (resp: any) => {
+        webp.dwebp(path.resolve(__dirname , "out", value.kebabTitle + ext), path.resolve(__dirname , "conv", value.kebabTitle + ".jpeg"), "-o").then(async (resp: any) => {
             console.log(resp);
             // uploading to aws s3
-            const body: Buffer = fs.readFileSync(__dirname + "/conv/" + value.kebabTitle + ".jpeg");
+            const body: Buffer = fs.readFileSync(path.resolve(__dirname, "conv", value.kebabTitle + ".jpeg"));
             aws.upload({
                 Bucket: "s3.game-linter.com",
                 Key: value.kebabTitle + ".jpeg",
@@ -89,10 +89,10 @@ app.methods.get('/', async (_req: Request, res: Response): Promise<void> => {
                 await value.save();
             } )
         });
-        webp.dwebp(__dirname + "/out/" + value.kebabTitle + extBack, __dirname + "/conv/" + value.kebabTitle + "-back.jpeg", "-o").then(async (resp: any) => {
+        webp.dwebp(path.resolve(__dirname, "out", value.kebabTitle + extBack), path.resolve(__dirname , "conv", value.kebabTitle + "-back.jpeg"), "-o").then(async (resp: any) => {
             console.log(resp);
             // uploading to aws s3
-            const body: Buffer = fs.readFileSync(__dirname + "/conv/" + value.kebabTitle + "-back.jpeg");
+            const body: Buffer = fs.readFileSync(path.resolve(__dirname , "conv", value.kebabTitle + "-back.jpeg"));
             aws.upload({
                 Bucket: "s3.game-linter.com",
                 Key: value.kebabTitle + "-back.jpeg",
